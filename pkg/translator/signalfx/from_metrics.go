@@ -287,6 +287,18 @@ func newDpsBuilder(capacity int) dpsBuilder {
 }
 
 func (dp *dpsBuilder) appendPoint(name string, mt *sfxpb.MetricType, ts int64, dims []*sfxpb.Dimension) *sfxpb.DataPoint {
+	// Check if dp.pos is out of bounds and resize baseOut if necessary
+	if dp.pos >= len(dp.baseOut) {
+		// Double the size of baseOut or increase it by a fixed amount
+		newSize := len(dp.baseOut) * 2
+		if newSize == 0 {
+			newSize = 1 // if the original size was 0, start with size 1
+		}
+		newBaseOut := make([]sfxpb.DataPoint, newSize)
+		copy(newBaseOut, dp.baseOut)
+		dp.baseOut = newBaseOut
+	}
+
 	base := dp.baseOut[dp.pos]
 	dp.pos++
 	dp.out = append(dp.out, &base)
