@@ -261,13 +261,13 @@ func attributesToDimensions(attributes pcommon.Map, extraDims []*sfxpb.Dimension
 	if attributes.Len() == 0 {
 		return dimensions
 	}
-	dimensionsValue := make([]sfxpb.Dimension, attributes.Len())
-	pos := 0
+	// Remove pos and direct indexing, use append instead
 	attributes.Range(func(k string, v pcommon.Value) bool {
-		dimensionsValue[pos].Key = k
-		dimensionsValue[pos].Value = v.AsString()
-		dimensions = append(dimensions, &dimensionsValue[pos])
-		pos++
+		newDim := sfxpb.Dimension{
+			Key:   k,
+			Value: v.AsString(),
+		}
+		dimensions = append(dimensions, &newDim)
 		return true
 	})
 	return dimensions
